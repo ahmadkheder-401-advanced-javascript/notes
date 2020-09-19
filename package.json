@@ -18,7 +18,9 @@
   },
   "homepage": "https://github.com/ahmadkheder-401-advanced-javascript/notes#readme",
   "dependencies": {
+    "eslint": "^7.9.0",
     "is-url": "^1.2.4",
+    "jsdoc": "^3.6.5",
     "minimist": "^1.2.5"
   }
 }
