@@ -1,40 +1,54 @@
 'use strict';
 
-const Note = require('../note.js');
-note = new Note();
 require('@code-fellows/supergoose');
-
+const Notes = require('../lib/notes');
 jest.spyOn(global.console, 'log');
 
-
-
-describe('noteee', () => {
-
-    it('if the data and data both valid will show the output  ', () => {
-
-        const note = new Note({
-            action: 'add',
-            payload: 'the note',
-        });
-        note.execute();
-        expect(console.log).toHaveBeenCalled();
+describe('Notes Module', () => {
+  it('add() should save the note to database', () => {
+    let data = { payload: 'note', category: 'test' };
+    const notes = new Notes();
+    return notes.add(data).then((res) => {
+      for (const key in data) {
+        expect(res[key]).toEqual(data[key]);
+      }
     });
-
-    it('shlould return nothing to the console if there no command  ', () => {
-        expect(console.log).toHaveBeenCalled();
+  });
+  it('delete() should delete the note from database', () => {
+    let data = { payload: 'note', category: 'test' };
+    const notes = new Notes();
+    return notes.add(data).then((res) => {
+      return notes.delete({ payload: res._id }).then((result) => {
+        for (const key in data) {
+          expect(result[key]).toEqual(data[key]);
+        }
+      });
     });
+  });
 
-    it('add() creat a new note ', () => {
-
-        let textNote = { text: 'mesg0 ', category: 'mesg0' }
-        return note.create(textNote).then(record => {
-            Object.keys(note).forEach(key => {
-                expect(record[key]).toEqual(obj[key]);
-            });
-        });
-
+  it('list() should get me the list of notes in database', () => {
+    let data = { payload: 'note', category: 'test' };
+    const notes = new Notes();
+    return notes.add(data).then((res) => {
+      return notes.list({ payload: 'test' }).then((result) => {
+        for (const key in data) {
+          expect(result[0][key]).toEqual(data[key]);
+        }
+      });
     });
+  });
+  it('execute() logs out when given options', () => {
+    const notes = new Notes();
+    notes.execute({ action: undefined });
+    expect(console.log).toHaveBeenCalled();
+  });
+  it('add() logs out when given options', () => {
+    let data = { payload: 'note', category: 'test' };
+    const notes = new Notes();
+    return notes.add(data).then((res) => {
+      expect(console.log).toHaveBeenCalled();
+    });
+  });
 
-   
 
 });

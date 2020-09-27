@@ -1,12 +1,22 @@
-#!/usr/bin/env node
-
 'use strict';
-
-const Input = require('./lib/input.js');
-const Notes  = require('./lib/notes.js');
-
-const userInput= new Input();
-const note = new Notes();
-
-let UserNote = note.execute({ action: process.argv.slice(2)[0].slice(1), payload: process.argv.slice(2)[1] });
-
+const mongoose = require('mongoose');
+const Input = require('./lib/input');
+const Notes = require('./lib/notes');
+const MONGOOSE_URL = 'mongodb://localhost:27017/foo';
+mongoose.connect(MONGOOSE_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+});
+const userInput = new Input();
+const notes = new Notes();
+userInput.isValid() ? notes.execute(userInput) : showError();
+function showError() {
+  console.log(`
+      api usage: 
+      --add <note> --category <category>
+    --add or -a adding new note
+    --category or -c adding category
+`);
+}
