@@ -1,25 +1,35 @@
-
 'use strict';
-
 jest.mock('minimist');
 const minimist = require('minimist');
-minimist.mockImplementation(()=> {
-    return { a,add: 'note'  }
+minimist.mockImplementation(() => {
+  return {
+    a: 'note'
+  };
 });
-
-const Input = require('../lib/input.js');
-
+const Input = require('../lib/input');
 describe('Input Module', () => {
+  it('input class will work properly', () => {
+    let options = new Input();
+    expect(options.action).toEqual('a');
+    expect(options.payload).toEqual('note');
+  });
 
-    it('Valid() will return true when it get action&&payload', ()=> {
-        let options = new Input();
-        expect(options.Valid()).toBeTruthy();
-    });
-    it('Valid() will  return false  when it gets invalid action||payload', ()=> {
-        let options = new Input();
-        expect(options.Valid()).not.toBeTruthy();
-    });
+  it('getAction() will have valid action when specified', () => {
+    let options = new Input();
+    expect(options.getAction({ a: 'note' })).toEqual('a');
+    expect(options.getAction()).toEqual(undefined);
+    expect(options.getAction({ add: 'note' })).toEqual('add');
+  });
 
-   
+  it('getPayload() will have valid payload when specified', () => {
+    let options = new Input();
+    expect(options.getPayload('note')).toEqual('note');
+    expect(options.getPayload(true)).toEqual(undefined);
+    expect(options.getPayload(2)).toEqual(undefined);
+  });
+
+  it('isValid() respects proper object', () => {
+    let options = new Input();
+    expect(options.isValid()).toEqual(undefined);
+  });
 });
-
