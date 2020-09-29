@@ -1,48 +1,38 @@
 'use strict';
 
-
 jest.mock('minimist');
 const minimist = require('minimist');
 minimist.mockImplementation(() => {
-    return {
-        a: 'text',
-        add: 'text',
-
-    };
+  return {
+    a: 'note',
+  };
 });
 
+const Input = require('../lib/input');
 
-const Input = require('../input.js');
+describe('Input Module', () => {
+  it('input class will work properly', () => {
+    let options = new Input();
+    expect(options.action).toEqual('a');
+    expect(options.payload).toEqual('note');
+  });
 
+  it('getAction() will have valid action when specified', () => {
+    let options = new Input();
+    expect(options.getAction({ a: 'note' })).toEqual('a');
+    expect(options.getAction()).toEqual(undefined);
+    expect(options.getAction({ add: 'note' })).toEqual('add');
+  });
 
-describe('input module', () => {
+  it('getPayload() will have valid payload when specified', () => {
+    let options = new Input();
+    expect(options.getPayload('note')).toEqual('note');
+    expect(options.getPayload(true)).toEqual(undefined);
+    expect(options.getPayload(2)).toEqual(undefined);
+  });
 
-    it('getMethod() if the input is correct ', () => {
-        let options = new Input();
-        expect(options.getMethod({ _: [], a: 'message', category: 'message' })).toEqual({ action: 'add', payload: 'message', category: 'message' });
-    });
-
-    it('getNote() if the input is correct ', () => {
-        let options = new Input();
-        expect(options.getNote('message')).toEqual({ 'action': 'add', 'payload': 'message' });
-    });
-
-    it('getNote() if the input is empty', () => {
-        let options = new Input();
-        expect(options.getNote(true)).toEqual('Please Enter a valid message inside \' \' ');
-    });
-
-    it('getNote() if the action not equal add or a ', () => {
-        let options = new Input();
-        expect(options.getNote('error')).toEqual('Please Enter -a or --add to add a note  ');
-    });
-
-
-
-    it('valid() respects proper object ', () => {
-        let option = new Input();
-        expect(option.valid()).toBeTruthy();
-
-    });
-
+  it('isValid() respects proper object', () => {
+    let options = new Input();
+    expect(options.isValid()).toEqual(undefined);
+  });
 });

@@ -1,40 +1,92 @@
 'use strict';
 
-const Note = require('../note.js');
-note = new Note();
 require('@code-fellows/supergoose');
+const Notes = require('../lib/notes');
 
+// Spies!
+// we will get to know if something was called or not.
 jest.spyOn(global.console, 'log');
 
-
-
-describe('noteee', () => {
-
-    it('if the data and data both valid will show the output  ', () => {
-
-        const note = new Note({
-            action: 'add',
-            payload: 'the note',
-        });
-        note.execute();
-        expect(console.log).toHaveBeenCalled();
+// describe the module I am testing
+describe('Notes Module', () => {
+  // test add
+  it('add() should save the note to database', () => {
+    let data = { payload: 'note', category: 'test' };
+    const notes = new Notes();
+    return notes.add(data).then((res) => {
+      for (const key in data) {
+        expect(res[key]).toEqual(data[key]);
+      }
     });
+  });
 
-    it('shlould return nothing to the console if there no command  ', () => {
-        expect(console.log).toHaveBeenCalled();
+  // test delete
+  it('delete() should delete the note from database', () => {
+    let data = { payload: 'note', category: 'test' };
+    const notes = new Notes();
+    return notes.add(data).then((res) => {
+      return notes.delete({ payload: res._id }).then((result) => {
+        for (const key in data) {
+          expect(result[key]).toEqual(data[key]);
+        }
+      });
     });
+  });
 
-    it('add() creat a new note ', () => {
-
-        let textNote = { text: 'mesg0 ', category: 'mesg0' }
-        return note.create(textNote).then(record => {
-            Object.keys(note).forEach(key => {
-                expect(record[key]).toEqual(obj[key]);
-            });
-        });
-
+  //test list
+  it('list() should get me the list of notes in database', () => {
+    let data = { payload: 'note', category: 'test' };
+    const notes = new Notes();
+    return notes.add(data).then((res) => {
+      return notes.list({ payload: 'test' }).then((result) => {
+        for (const key in data) {
+          expect(result[0][key]).toEqual(data[key]);
+        }
+      });
     });
+  });
 
-   
+  // console log in execute
+  it('execute() logs out when given options', () => {
+    const notes = new Notes();
+    notes.execute({ action: undefined });
+    expect(console.log).toHaveBeenCalled();
+  });
 
+  // Check for console log
+  it('add() logs out when given options', () => {
+    let data = { payload: 'note', category: 'test' };
+    const notes = new Notes();
+    return notes.add(data).then((res) => {
+      expect(console.log).toHaveBeenCalled();
+    });
+  });
+
+  //test for errors
+  it('add() should throw error if passed invalid arguments', () => {
+    try {
+      const notes = new Notes();
+      notes.add();
+    } catch (error) {
+      expect(error).toEqual(new Error('somthing went wrong'));
+    }
+  });
+
+  it('list() should throw error if passed invalid arguments', () => {
+    try {
+      const notes = new Notes();
+      notes.list({invalid: 'invalid'});
+    } catch (error) {
+      expect(error).toEqual(new Error('somthing went wrong'));
+    }
+  });
+
+  it('add() should throw error if passed invalid arguments', () => {
+    try {
+      const notes = new Notes();
+      notes.delete();
+    } catch (error) {
+      expect(error).toEqual(new Error('somthing went wrong'));
+    }
+  });
 });
